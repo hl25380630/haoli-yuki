@@ -26,7 +26,7 @@ public class UserService {
 		String userName = user.getUserName();
 		User dbUser = this.getByUserName(userName);
 		if(dbUser != null) {
-			throw new ConditionException("该用户名已注册");
+			throw new ConditionException("User already exists!");
 		}
 		String encryptPassword = user.getPassword();
 		String privateKey = rsaProperties.getPrivateKey();
