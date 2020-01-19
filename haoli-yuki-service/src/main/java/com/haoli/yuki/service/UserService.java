@@ -6,11 +6,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.haoli.sdk.web.domain.RsaProperties;
 import com.haoli.sdk.web.exception.ConditionException;
 import com.haoli.sdk.web.util.Md5Util;
 import com.haoli.sdk.web.util.RsaUtil;
 import com.haoli.yuki.dao.UserDao;
+import com.haoli.yuki.domain.RsaProperties;
 import com.haoli.yuki.domain.User;
 
 @Service
