@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haoli.yuki.dao.WechatAppletDao">
+
+	<insert id="add" parameterType = "com.haoli.yuki.domain.WechatAppletInfo" useGeneratedKeys = "true" keyProperty = "id">
+		insert into
+			t_wechat_applet_info(
+				appid,
+				secret,
+				sysCode,
+				remark,
+				createTime
+			)values(
+				#{appid},
+				#{secret},
+				#{sysCode},
+				#{remark},
+				#{createTime}
+			)
+	
+	</insert>
+
+	<select id="getWechatAppletInfoBySysCode" parameterType = "java.lang.String" resultType = "com.haoli.yuki.domain.WechatAppletInfo">
+		select
+			*
+		from
+			t_wechat_applet_info
+		where
+			sysCode = #{sysCode}
+	</select>
+
+</mapper>

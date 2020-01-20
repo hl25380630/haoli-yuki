@@ -3,8 +3,10 @@ package com.haoli.yuki.api;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.haoli.sdk.web.domain.JsonResponse;
@@ -27,6 +29,12 @@ public class UserApi {
 	public JsonResponse<String> userLogin(@RequestBody Map<String, Object> params){
 		userService.userLogin(params);
 		return JsonResponse.success();
+	}
+	
+	@GetMapping("/user/applet/login")
+	public JsonResponse<Map<String, Object>> userAppletLogin(@RequestParam String code) throws Exception{
+		Map<String, Object> result = userService.userAppletLogin(code);
+		return new JsonResponse<Map<String, Object>>(result);
 	}
 
 }

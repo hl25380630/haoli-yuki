@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haoli.yuki.dao.WechatAppletDao">
+
+	<insert id="add" parameterType = "com.haoli.yuki.domain.UserWechatRel" useGeneratedKeys = "true" keyProperty = "id">
+		insert into
+			t_user_wechat_rel(
+				userId,
+				unionid,
+				openid,
+				source,
+				createTime
+			)values(
+				#{userId},
+				#{unionid},
+				#{openid},
+				#{source},
+				#{createTime}
+			)
+	
+	</insert>
+
+	<select id="getBySourceAndOpenId" parameterType = "java.util.Map" resultType = "com.haoli.yuki.domain.UserWechatRel">
+		select
+			*
+		from
+			t_user_wechat_rel
+		where
+			source = #{source}
+			and openId = #{openId}
+	</select>
+
+</mapper>
