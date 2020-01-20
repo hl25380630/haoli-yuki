@@ -19,6 +19,9 @@ public class User {
 	private Date createTime;
 	
 	private Date updateTime;
+	
+	//辅助字段：用户档案
+	private UserProfile userProfile;
 
 	public Long getId() {
 		return id;
@@ -82,6 +85,14 @@ public class User {
 
 	public void setSalt(String salt) {
 		this.salt = salt;
+	}
+
+	public UserProfile getUserProfile() {
+		return userProfile;
+	}
+
+	public void setUserProfile(UserProfile userProfile) {
+		this.userProfile = userProfile;
 	}
 	
 }

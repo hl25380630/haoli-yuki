@@ -21,6 +21,7 @@ import com.haoli.sdk.web.util.RsaUtil;
 import com.haoli.yuki.dao.UserDao;
 import com.haoli.yuki.domain.RsaProperties;
 import com.haoli.yuki.domain.User;
+import com.haoli.yuki.domain.UserProfile;
 import com.haoli.yuki.domain.UserWechatRel;
 import com.haoli.yuki.domain.WechatAppletInfo;
 import com.haoli.yuki.service.constant.UserWechatRelConstant;
@@ -37,6 +38,9 @@ public class UserService {
 	
 	@Autowired
 	private UserWechatRelService userWechatRelService;
+	
+	@Autowired
+	private UserProfileService userProfileService;
 	
 	@Autowired
 	private TokenService tokenService;
@@ -65,25 +69,38 @@ public class UserService {
 		user.setCreateTime(new Date());
 		userDao.add(user);
 	}
+	
+	
+	public boolean checkUserNameIsRegistered(String userName) {
+		boolean flag = true;
+		User dbUser = this.getByUserName(userName);
+		//判断该用户名（手机号）是否已经被注册
+		if(dbUser == null) {
+			flag = false;
+		}
+		return flag;
+	}
 
 	public Map<String, Object> userAutoRegisterAndLogin(HttpServletRequest request, User user) throws Exception{
+		Map<String, Object> result = new HashMap<String, Object>();
 		String userName = user.getUserName();
-		User dbUser = this.getByUserName(userName);
-		if(dbUser != null) {
-			throw new ConditionException("该号码已经被别人使用啦,换一个吧~");
-		}
+		//自动注册
 		String rawPassword = autoRegisterInitialPwd;
 		String salt = System.currentTimeMillis() + userName;
 		String password = Md5Util.sign(rawPassword, salt, "UTF-8");
+		//添加用户信息到数据库
 		user.setPassword(password);
 		user.setSalt(salt);
 		user.setCreateTime(new Date());
 		userDao.add(user);
+		//添加用户档案信息
+		UserProfile profile = user.getUserProfile();
+		userProfileService.add(profile);
+		//生成用户ut
 		Long userId = user.getId();
 		String agent = request.getHeader("User-Agent");
 		String ip = IpUtil.getIP(request);
 		String ut = tokenService.buildUt(String.valueOf(userId), agent, ip);
-		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("userName", userName);
 		result.put("ut", ut);
 		return result;
@@ -96,7 +113,7 @@ public class UserService {
 		String rawPassword = RsaUtil.decrypt(encryptPassword, privateKey);
 		User dbUser = this.getByUserName(userName);
 		if(dbUser == null) {
-			throw new ConditionException("该会员号不存在，请重试~");
+			throw new ConditionException("该号码尚未注册");
 		}
 		String dbPassword = dbUser.getPassword();
 		String salt = dbUser.getSalt();

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haoli.yuki.dao.UserProfileDao">
+
+	<insert id="add" parameterType = "com.haoli.yuki.domain.UserProfile" useGeneratedKeys = "true" keyProperty = "id">
+		insert into
+			t_user(
+				userId,
+				birth,
+				gender,
+				bandRole,
+				createTime
+			)values(
+				#{userId},
+				#{birth},
+				#{gender},
+				#{bandRole},
+				#{createTime}
+			)
+	</insert>
+
+	<select id="getUserProfile" parameterType = "java.lang.Long" resultType = "com.haoli.yuki.domain.UserProfile">
+		select
+			*
+		from
+			t_user_profile
+		where
+			userId = #{userId}
+	</select>
+
+</mapper>
