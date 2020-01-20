@@ -3,10 +3,12 @@ package com.haoli.yuki.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.haoli.yuki.dao.UserWechatRelDao;
 import com.haoli.yuki.domain.UserWechatRel;
 
+@Service
 public class UserWechatRelService {
 	
 	@Autowired

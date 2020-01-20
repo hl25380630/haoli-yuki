@@ -2,6 +2,8 @@ package com.haoli.yuki.api;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +27,16 @@ public class UserApi {
 		return JsonResponse.success();
 	}
 	
-	@PostMapping("/user/login")
-	public JsonResponse<String> userLogin(@RequestBody Map<String, Object> params){
-		userService.userLogin(params);
+	@PostMapping("/user/auto/register")
+	public JsonResponse<String> userAutoRegister(@RequestBody User user) throws Exception{
+		userService.userAutoRegister(user);
 		return JsonResponse.success();
+	}
+	
+	@PostMapping("/user/login")
+	public JsonResponse<Map<String, Object>> userLogin(HttpServletRequest request, @RequestBody Map<String, Object> params) throws Exception{
+		Map<String, Object> result = userService.userLogin(request, params);
+		return new JsonResponse<Map<String, Object>>(result);
 	}
 	
 	@GetMapping("/user/applet/login")

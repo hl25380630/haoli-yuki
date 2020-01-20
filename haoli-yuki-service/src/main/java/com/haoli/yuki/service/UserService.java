@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.haoli.sdk.web.exception.ConditionException;
 import com.haoli.sdk.web.util.HttpUtil;
 import com.haoli.sdk.web.util.HttpUtil.HttpResponse;
+import com.haoli.sdk.web.util.IpUtil;
+import com.haoli.sdk.web.util.MapUtil;
 import com.haoli.sdk.web.util.Md5Util;
 import com.haoli.sdk.web.util.RsaUtil;
 import com.haoli.yuki.dao.UserDao;
@@ -33,6 +37,9 @@ public class UserService {
 	
 	@Autowired
 	private UserWechatRelService userWechatRelService;
+	
+	@Autowired
+	private TokenService tokenService;
 	
 	@Autowired
 	private WechatAppletService wechatAppletService;
@@ -74,11 +81,29 @@ public class UserService {
 		userDao.add(user);
 	}
 	
-	public User getByUserName(String userName) {
-		return userDao.getByUserName(userName);
-	}
-	
-	public void userLogin(Map<String, Object> params) {
+	public Map<String, Object> userLogin(HttpServletRequest request, Map<String, Object> params) throws Exception{
+		String userName = MapUtil.getString(params, "userName");
+		String encryptPassword = MapUtil.getString(params, "password");
+		String privateKey = rsaProperties.getPrivateKey();
+		String rawPassword = RsaUtil.decrypt(encryptPassword, privateKey);
+		User dbUser = this.getByUserName(userName);
+		if(dbUser == null) {
+			throw new ConditionException("该会员号不存在，请重试~");
+		}
+		String dbPassword = dbUser.getPassword();
+		String salt = dbUser.getSalt();
+		String password = Md5Util.sign(rawPassword, salt, "UTF-8");
+		if(!dbPassword.equals(password)) {
+			throw new ConditionException("密码错误，请重试~");
+		}
+		String agent = request.getHeader("User-Agent");
+		Long userId = dbUser.getId();
+		String ip = IpUtil.getIP(request);
+		String ut = tokenService.buildUt(String.valueOf(userId), agent, ip);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("userName", userName);
+		result.put("ut", ut);
+		return result;
 	}
 
 	public Map<String, Object> userAppletLogin(String jsCode) throws Exception {
@@ -106,5 +131,10 @@ public class UserService {
 		}
 		return null;
 	}
+	
+	public User getByUserName(String userName) {
+		return userDao.getByUserName(userName);
+	}
+	
 
 }
