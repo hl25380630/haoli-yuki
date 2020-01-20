@@ -14,6 +14,8 @@ public class User {
 	
 	private String avatar;
 	
+	private String salt;
+	
 	private Date createTime;
 	
 	private Date updateTime;
@@ -72,6 +74,14 @@ public class User {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 	
 }

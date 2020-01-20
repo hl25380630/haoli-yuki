@@ -9,12 +9,14 @@
 				password,
 				nick,
 				avatar,
+				salt,
 				createTime
 			)values(
 				#{userName},
 				#{password},
 				#{nick},
 				#{avatar},
+				#{salt},
 				#{createTime}
 			)
 	

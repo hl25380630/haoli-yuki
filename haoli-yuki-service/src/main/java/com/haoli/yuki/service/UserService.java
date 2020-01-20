@@ -40,6 +40,9 @@ public class UserService {
 	@Value("${wechat.applet.login.url}")
 	private String wechatAppletLoginUrl;
 	
+	@Value("${auto.register.initial.password}")
+	private String autoRegisterInitialPwd;
+	
 	public void userRegister(User user) throws Exception{
 		String userName = user.getUserName();
 		User dbUser = this.getByUserName(userName);
@@ -52,6 +55,21 @@ public class UserService {
 		String salt = System.currentTimeMillis() + userName;
 		String password = Md5Util.sign(rawPassword, salt, "UTF-8");
 		user.setPassword(password);
+		user.setCreateTime(new Date());
+		userDao.add(user);
+	}
+
+	public void userAutoRegister(User user) throws Exception{
+		String userName = user.getUserName();
+		User dbUser = this.getByUserName(userName);
+		if(dbUser != null) {
+			throw new ConditionException("该号码已经被别人使用啦,换一个吧~");
+		}
+		String rawPassword = autoRegisterInitialPwd;
+		String salt = System.currentTimeMillis() + userName;
+		String password = Md5Util.sign(rawPassword, salt, "UTF-8");
+		user.setPassword(password);
+		user.setSalt(salt);
 		user.setCreateTime(new Date());
 		userDao.add(user);
 	}
