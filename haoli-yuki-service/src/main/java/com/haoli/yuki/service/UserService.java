@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.haoli.sdk.web.exception.ConditionException;
@@ -74,13 +76,13 @@ public class UserService {
 	public boolean checkUserNameIsRegistered(String userName) {
 		boolean flag = true;
 		User dbUser = this.getByUserName(userName);
-		//判断该用户名（手机号）是否已经被注册
 		if(dbUser == null) {
 			flag = false;
 		}
 		return flag;
 	}
 
+	@Transactional(propagation=Propagation.REQUIRED,rollbackFor= {Exception.class,RuntimeException.class})
 	public Map<String, Object> userAutoRegisterAndLogin(HttpServletRequest request, User user) throws Exception{
 		Map<String, Object> result = new HashMap<String, Object>();
 		String userName = user.getUserName();
@@ -93,11 +95,13 @@ public class UserService {
 		user.setSalt(salt);
 		user.setCreateTime(new Date());
 		userDao.add(user);
+		Long userId = user.getId();
 		//添加用户档案信息
 		UserProfile profile = user.getUserProfile();
+		profile.setUserId(userId);
+		profile.setCreateTime(new Date());
 		userProfileService.add(profile);
 		//生成用户ut
-		Long userId = user.getId();
 		String agent = request.getHeader("User-Agent");
 		String ip = IpUtil.getIP(request);
 		String ut = tokenService.buildUt(String.valueOf(userId), agent, ip);

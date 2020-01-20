@@ -4,7 +4,7 @@
 
 	<insert id="add" parameterType = "com.haoli.yuki.domain.UserProfile" useGeneratedKeys = "true" keyProperty = "id">
 		insert into
-			t_user(
+			t_user_profile(
 				userId,
 				birth,
 				gender,

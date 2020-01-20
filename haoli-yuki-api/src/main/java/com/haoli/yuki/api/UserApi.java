@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +39,7 @@ public class UserApi {
 		return new JsonResponse<Map<String, Object>>(result);
 	}
 	
-	@PostMapping("/user/userName/check")
+	@GetMapping("/user/userName/check")
 	public JsonResponse<Boolean> checkUserNameIsRegistered(@RequestParam String userName) throws Exception{
 		boolean flag = userService.checkUserNameIsRegistered(userName);
 		return new JsonResponse<Boolean>(flag);
