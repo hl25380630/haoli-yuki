@@ -27,12 +27,6 @@ public class UserApi {
 		return JsonResponse.success();
 	}
 	
-	@PostMapping("/user/auto/register")
-	public JsonResponse<String> userAutoRegister(@RequestBody User user) throws Exception{
-		userService.userAutoRegister(user);
-		return JsonResponse.success();
-	}
-	
 	@PostMapping("/user/login")
 	public JsonResponse<Map<String, Object>> userLogin(HttpServletRequest request, @RequestBody Map<String, Object> params) throws Exception{
 		Map<String, Object> result = userService.userLogin(request, params);
@@ -42,6 +36,12 @@ public class UserApi {
 	@GetMapping("/user/applet/login")
 	public JsonResponse<Map<String, Object>> userAppletLogin(@RequestParam String code) throws Exception{
 		Map<String, Object> result = userService.userAppletLogin(code);
+		return new JsonResponse<Map<String, Object>>(result);
+	}
+	
+	@PostMapping("/user/applet/auto/login")
+	public JsonResponse<Map<String, Object>> userAutoRegister(HttpServletRequest request, @RequestBody User user) throws Exception{
+		Map<String, Object> result = userService.userAutoRegisterAndLogin(request, user);
 		return new JsonResponse<Map<String, Object>>(result);
 	}
 

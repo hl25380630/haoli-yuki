@@ -66,7 +66,7 @@ public class UserService {
 		userDao.add(user);
 	}
 
-	public void userAutoRegister(User user) throws Exception{
+	public Map<String, Object> userAutoRegisterAndLogin(HttpServletRequest request, User user) throws Exception{
 		String userName = user.getUserName();
 		User dbUser = this.getByUserName(userName);
 		if(dbUser != null) {
@@ -79,6 +79,14 @@ public class UserService {
 		user.setSalt(salt);
 		user.setCreateTime(new Date());
 		userDao.add(user);
+		Long userId = user.getId();
+		String agent = request.getHeader("User-Agent");
+		String ip = IpUtil.getIP(request);
+		String ut = tokenService.buildUt(String.valueOf(userId), agent, ip);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("userName", userName);
+		result.put("ut", ut);
+		return result;
 	}
 	
 	public Map<String, Object> userLogin(HttpServletRequest request, Map<String, Object> params) throws Exception{
@@ -106,6 +114,7 @@ public class UserService {
 		return result;
 	}
 
+	//等申请了企业级应用后再用
 	public Map<String, Object> userAppletLogin(String jsCode) throws Exception {
 		WechatAppletInfo appletInfo = wechatAppletService.getWechatAppletInfoBySysCode(WechatAppletConstant.SYS_CODE_BANDDREAM);
 		String appid = appletInfo.getAppid();
